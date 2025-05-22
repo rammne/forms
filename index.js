@@ -16,11 +16,95 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// Authentication credentials
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "@olopscadmin1978";
+
 // Global variables
 let allRecords = [];
+let isAuthenticated = false;
+
+// Check authentication status on page load
+window.addEventListener('load', () => {
+    checkAuthStatus();
+});
+
+// Check if user is authenticated
+function checkAuthStatus() {
+    const authToken = sessionStorage.getItem('adminAuth');
+    if (authToken === 'authenticated') {
+        isAuthenticated = true;
+        showAuthStatus();
+    }
+}
+
+// Show authentication status
+function showAuthStatus() {
+    document.getElementById('authStatus').style.display = 'flex';
+}
+
+// Hide authentication status
+function hideAuthStatus() {
+    document.getElementById('authStatus').style.display = 'none';
+}
+
+// Login function
+window.login = function (username, password) {
+    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+        isAuthenticated = true;
+        sessionStorage.setItem('adminAuth', 'authenticated');
+        showAuthStatus();
+        hideLoginModal();
+        showRecordsContent();
+        loadRecords();
+        return true;
+    }
+    return false;
+};
+
+// Logout function
+window.logout = function () {
+    isAuthenticated = false;
+    sessionStorage.removeItem('adminAuth');
+    hideAuthStatus();
+    hideRecordsContent();
+
+    // Switch to add record section
+    showSection('add-record');
+};
+
+// Show login modal
+function showLoginModal() {
+    document.getElementById('loginModal').style.display = 'flex';
+}
+
+// Hide login modal
+function hideLoginModal() {
+    document.getElementById('loginModal').style.display = 'none';
+    document.getElementById('loginForm').reset();
+    document.getElementById('loginMessage').innerHTML = '';
+}
+
+// Show records content
+function showRecordsContent() {
+    document.getElementById('recordsAuth').style.display = 'none';
+    document.getElementById('recordsContent').style.display = 'block';
+}
+
+// Hide records content
+function hideRecordsContent() {
+    document.getElementById('recordsAuth').style.display = 'block';
+    document.getElementById('recordsContent').style.display = 'none';
+}
 
 // Navigation functions
 window.showSection = function (sectionId) {
+    // Check if trying to access view-records without authentication
+    if (sectionId === 'view-records' && !isAuthenticated) {
+        showLoginModal();
+        return;
+    }
+
     // Hide all sections
     document.querySelectorAll('.content-section').forEach(section => {
         section.classList.remove('active');
@@ -37,11 +121,56 @@ window.showSection = function (sectionId) {
     // Add active class to clicked button
     event.target.classList.add('active');
 
-    // Load records if viewing records section
-    if (sectionId === 'view-records') {
+    // Load records if viewing records section and authenticated
+    if (sectionId === 'view-records' && isAuthenticated) {
+        showRecordsContent();
         loadRecords();
     }
 };
+
+// Login form submission
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    const loginBtn = document.getElementById('loginBtn');
+    const loginMessage = document.getElementById('loginMessage');
+
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'Logging in...';
+
+    // Simulate a brief delay for better UX
+    setTimeout(() => {
+        if (login(username, password)) {
+            loginMessage.innerHTML = '<div class="message success">Login successful!</div>';
+            setTimeout(() => {
+                hideLoginModal();
+                // Switch to view records section
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.getElementById('view-records').classList.add('active');
+                document.getElementById('viewRecordsBtn').classList.add('active');
+            }, 1000);
+        } else {
+            loginMessage.innerHTML = '<div class="message error">Invalid username or password!</div>';
+        }
+
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Login';
+    }, 500);
+});
+
+// Close modal when clicking outside
+document.getElementById('loginModal').addEventListener('click', (e) => {
+    if (e.target.id === 'loginModal') {
+        hideLoginModal();
+    }
+});
 
 // Form submission
 document.getElementById('recordForm').addEventListener('submit', async (e) => {
