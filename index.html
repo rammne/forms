@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student/Alumni Management System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Student/Alumni Form</h1>
+            <p>The data you will provide will be used in OLOPSC Alumni Tracking System.</p>
+            <p>The purpose of this form is to ensure that the submittied entries in OATS are verified alumni of OLOPSC.</p>
+            <p>This will help us in creating a secured Alumni System for Our Lady of Perpetual Succor College.</p>
+            <p>Thank you</p>
+        </div>
+
+        <div class="nav-buttons">
+            <button class="nav-btn active" onclick="showSection('add-record')">Add Record</button>
+            <button class="nav-btn" onclick="showSection('view-records')">View Records</button>
+        </div>
+
+        <!-- Add Record Section -->
+        <div id="add-record" class="content-section active">
+            <h2 style="margin-bottom: 30px; text-align: center; color: #333;">Add New Record</h2>
+
+            <div id="message-container"></div>
+
+            <form id="recordForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="firstName">First Name *</label>
+                        <input type="text" id="firstName" name="firstName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lastName">Last Name *</label>
+                        <input type="text" id="lastName" name="lastName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="middleName">Middle Name</label>
+                        <input type="text" id="middleName" name="middleName">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dateOfBirth">Date of Birth *</label>
+                        <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="graduationYear">Graduation Year *</label>
+                        <input type="number" id="graduationYear" name="graduationYear" min="1950" max="2030" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="degreeProgram">Degree Program *</label>
+                        <input type="text" id="degreeProgram" name="degreeProgram" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="studentId">Student ID/Alumni ID *</label>
+                        <input type="text" id="studentId" name="studentId" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">Add Record</button>
+            </form>
+        </div>
+
+        <!-- View Records Section -->
+        <div id="view-records" class="content-section">
+            <h2 style="margin-bottom: 30px; text-align: center; color: #333;">View Records</h2>
+
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput"
+                    placeholder="Search by name, email, student ID, or degree program...">
+            </div>
+
+            <div id="recordsContainer">
+                <div class="loading">Loading records...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="index.js" type="module">
+
+    </script>
+</body>
+
+</html>
